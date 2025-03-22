@@ -20,5 +20,10 @@ class DatabaseSeeder extends Seeder
             'email' => 'asyouwish@rematcha.dev',
             'password' => bcrypt('password'),
         ]);
+
+        $this->call([
+            EventSeeder::class,
+            MessageSeeder::class,
+        ]);
     }
 }
