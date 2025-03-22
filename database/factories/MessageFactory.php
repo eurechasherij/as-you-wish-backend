@@ -18,7 +18,7 @@ class MessageFactory extends Factory
         $sender = User::first();
 
         return [
-            'event_id' => Event::factory(),
+            'event_id' => 1,
             'content' => $this->faker->sentence(),
             'status' => $this->faker->randomElement([MessageStatusEnum::PENDING, MessageStatusEnum::VISIBLE]),
             'displayed' => $this->faker->boolean,
