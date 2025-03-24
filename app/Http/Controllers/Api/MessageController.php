@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Enums\MessageStatusEnum;
+use App\Events\MessageSubmitEvent;
 use App\Http\Controllers\Controller;
 use App\Models\Event;
 use App\Models\Guest;
@@ -117,6 +118,8 @@ class MessageController extends Controller
             'sender_id' => $sender->id,
             'sender_type' => $sender->getMorphClass(),
         ]);
+
+        MessageSubmitEvent::dispatch($message);
 
         return response()->json($message, 201);
     }
