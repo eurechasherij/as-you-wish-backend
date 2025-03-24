@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\MessageStatusEnum;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\DisplayEventResource;
 use App\Models\Event;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -61,6 +63,12 @@ class EventController extends Controller
 
     public function showEventPage($slug)
     {
-        return Event::where('slug', $slug)->with('messages.sender')->firstOrFail();
+        $event = Event::where('slug', $slug)->select('id', 'event_name', 'slug')->firstOrFail();
+
+        $event->load(['messages' => function ($query) {
+            $query->with('sender.userInfo')->where('displayed', false)->where('status', MessageStatusEnum::VISIBLE);
+        }]);
+
+        return DisplayEventResource::make($event);
     }
 }
