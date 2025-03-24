@@ -58,4 +58,9 @@ class EventController extends Controller
 
         return response()->json(null, 204);
     }
+
+    public function showEventPage($slug)
+    {
+        return Event::where('slug', $slug)->with('messages.sender')->firstOrFail();
+    }
 }

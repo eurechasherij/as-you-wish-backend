@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Enums\MessageStatusEnum;
 use App\Http\Controllers\Controller;
+use App\Models\Event;
 use App\Models\Guest;
 use App\Models\Message;
 use App\Models\UserInfo;
@@ -80,5 +81,43 @@ class MessageController extends Controller
         $message->delete();
 
         return response()->json(null, 204);
+    }
+
+    public function submitMessage(Request $request, $slug)
+    {
+        $event = Event::where('slug', $slug)->firstOrFail();
+
+        $request->validate([
+            'content' => 'required|string',
+            'name' => 'nullable|string|max:255',
+            'email' => 'nullable|email',
+            'instagram' => 'nullable|string|max:255',
+        ]);
+
+        if (Auth::check()) {
+            $sender = Auth::user();
+        } else {
+            $sender = Guest::firstOrCreate(
+                ['email' => $request->email],
+                ['name' => $request->name ?? 'Anonymous']
+            );
+
+            if ($request->has('instagram')) {
+                UserInfo::updateOrCreate(
+                    ['model_id' => $sender->id, 'model_type' => $sender->getMorphClass()],
+                    ['instagram' => $request->instagram]
+                );
+            }
+        }
+
+        $message = Message::create([
+            'event_id' => $event->id,
+            'content' => $request->content,
+            'status' => MessageStatusEnum::PENDING,
+            'sender_id' => $sender->id,
+            'sender_type' => $sender->getMorphClass(),
+        ]);
+
+        return response()->json($message, 201);
     }
 }

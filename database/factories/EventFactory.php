@@ -13,7 +13,7 @@ class EventFactory extends Factory
 
     public function definition(): array
     {
-        $name = $this->faker->sentence(3);
+        $name = $this->faker->firstNameMale() . ' & ' . $this->faker->firstNameFemale();
         return [
             'event_name' => $name,
             'slug' => Str::slug($name),

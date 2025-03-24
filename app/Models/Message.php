@@ -36,9 +36,3 @@ class Message extends Model
         return $this->morphTo();
     }
 }
-
-enum MessageStatus: string
-{
-    case Pending = 'pending';
-    case Visible = 'visible';
-}
