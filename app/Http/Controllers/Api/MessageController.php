@@ -114,12 +114,13 @@ class MessageController extends Controller
         $message = Message::create([
             'event_id' => $event->id,
             'content' => $request->content,
-            'status' => MessageStatusEnum::PENDING,
+            'status' => MessageStatusEnum::VISIBLE, // TODO: change to review mode
+            'displayed' => false,
             'sender_id' => $sender->id,
             'sender_type' => $sender->getMorphClass(),
         ]);
 
-        MessageSubmitEvent::dispatch($message);
+        MessageSubmitEvent::broadcast($message);
 
         return response()->json($message, 201);
     }

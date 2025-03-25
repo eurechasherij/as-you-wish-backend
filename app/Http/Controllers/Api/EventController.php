@@ -66,7 +66,7 @@ class EventController extends Controller
         $event = Event::where('slug', $slug)->select('id', 'event_name', 'slug')->firstOrFail();
 
         $event->load(['messages' => function ($query) {
-            $query->with('sender.userInfo')->where('displayed', false)->where('status', MessageStatusEnum::VISIBLE);
+            $query->with('sender.userInfo')->where('displayed', false)->where('status', MessageStatusEnum::VISIBLE)->orderBy('created_at', 'desc')->limit(10);
         }]);
 
         return DisplayEventResource::make($event);
