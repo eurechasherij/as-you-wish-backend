@@ -122,6 +122,6 @@ class MessageController extends Controller
 
         MessageSubmitEvent::broadcast($message);
 
-        return response()->json($message, 201);
+        return response()->json("Message submitted successfully", 201);
     }
 }
