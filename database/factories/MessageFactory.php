@@ -15,7 +15,7 @@ class MessageFactory extends Factory
 
     public function definition(): array
     {
-        $sender = User::first();
+        $sender = User::factory()->create();
 
         $weddingWishes = [
             "Wishing you a lifetime of love and happiness! 💍❤️",
