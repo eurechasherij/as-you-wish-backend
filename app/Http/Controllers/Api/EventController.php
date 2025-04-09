@@ -14,17 +14,35 @@ class EventController extends Controller
 {
     public function index()
     {
-        return Event::with('creator')->get();
+        return Event::with('creator')->where('created_by', Auth::id())->get();
     }
 
     public function store(Request $request)
     {
         $request->validate([
             'event_name' => 'required|string|max:255',
-            'slug' => 'required|string|unique:events,slug',
+            'slug' => 'nullable|string|unique:events,slug',
             'description' => 'nullable|string',
             'event_date' => 'nullable|date',
         ]);
+
+        if ($request->has('slug') && !empty($request->slug)) {
+            $request->merge([
+                'slug' => Str::slug($request->slug),
+            ]);
+        } else {
+            $slug = Event::where('slug', Str::slug($request->event_name))->first();
+
+            if ($slug) {
+                $request->merge([
+                    'slug' => Str::slug($request->event_name) . '-' . $slug->id,
+                ]);
+            } else {
+                $request->merge([
+                    'slug' => Str::slug($request->event_name),
+                ]);
+            }
+        }
 
         $event = Event::create([
             ...$request->only(['event_name', 'slug', 'description', 'event_date']),
